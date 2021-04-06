@@ -1,4 +1,5 @@
-/* eslint-disable */
+/* eslint-disable no-restricted-syntax */
+// eslint-disable-next-line import/no-extraneous-dependencies
 import _ from 'lodash';
 import fs from 'fs';
 import path from 'path';
