@@ -36,7 +36,7 @@ const differ = (data1, data2) => {
 };
 
 export default (path1, path2) => {
-  const data1 = JSON.parse(fs.readFileSync(path.resolve('./tmp', path1)));
-  const data2 = JSON.parse(fs.readFileSync(path.resolve('./tmp', path2)));
+  const data1 = JSON.parse(fs.readFileSync(path.resolve(path1)));
+  const data2 = JSON.parse(fs.readFileSync(path.resolve(path2)));
   return differ(data1, data2);
 };
