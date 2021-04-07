@@ -3,6 +3,7 @@
 import _ from 'lodash';
 import fs from 'fs';
 import path from 'path';
+import parser from './parsers/index.js';
 
 const differ = (data1, data2) => {
   const keys1 = _.keys(data1);
@@ -35,8 +36,11 @@ const differ = (data1, data2) => {
   return `{\n  ${resultColl.join('\n  ')} \n}`;
 };
 
-export default (path1, path2) => {
-  const data1 = JSON.parse(fs.readFileSync(path.resolve(path1)));
-  const data2 = JSON.parse(fs.readFileSync(path.resolve(path2)));
-  return differ(data1, data2);
+const getExtension = (filepath) => path.extname(`${filepath}`).replace(/\./g, '');
+
+export default (filepath1, filepath2) => {
+  const ext = getExtension(filepath1);
+  const data1 = fs.readFileSync(path.resolve(filepath1));
+  const data2 = fs.readFileSync(path.resolve(filepath2));
+  return differ(parser(ext)(data1), parser(ext)(data2));
 };
