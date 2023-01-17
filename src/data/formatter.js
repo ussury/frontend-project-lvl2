@@ -1,0 +1,1 @@
+export const format = (f) => JSON.parse(f);
