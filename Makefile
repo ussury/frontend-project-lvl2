@@ -7,5 +7,5 @@ publish:
 lint:
 	npx eslint .
 
-format:
-	npx prettier --write .
+test:
+	NODE_OPTIONS=--experimental-vm-modules npx jest
