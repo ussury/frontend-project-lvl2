@@ -1,1 +1,1 @@
-export const format = (f) => JSON.parse(f);
+export default (f) => JSON.parse(f);

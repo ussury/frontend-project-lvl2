@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { format } from './data/formatter.js';
+import format from './data/formatter.js';
 import filePath from './data/filePath.js';
 
 const diff = (data1, data2) => {
@@ -24,8 +24,7 @@ const diff = (data1, data2) => {
     }
   }
 
-  return result + '}';
+  return `${result}}`;
 };
 
-export const gendiff = (path1, path2) =>
-  diff(format(filePath(path1)), format(filePath(path2)));
+export default (path1, path2) => (diff(format(filePath(path1)), format(filePath(path2))));
