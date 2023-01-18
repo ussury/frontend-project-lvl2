@@ -1,16 +1,33 @@
 name: github-actions
-run-name: ${{ github.actor }} is learning GitHub Actions
-on: [push]
+
+# Trigger the workflow on push or pull request
+on:
+  - push
+
 jobs:
-  check-bats-version:
+  build:
+
+    # The type of machine to run the job on
     runs-on: ubuntu-latest
+
+    strategy:
+      # Node versions list
+      matrix:
+        node-version: [>=14.x]
+
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+        # Check-out repository under GitHub workspace
+        # https://github.com/actions/checkout
+      - uses: actions/checkout@v2
+        # Step's name
+      - name: Use Node.js ${{ matrix.node-version }}
+        # Configures the node version used on GitHub-hosted runners
+        # https://github.com/actions/setup-node
+        uses: actions/setup-node@v2
+        # The Node.js version to configure
         with:
-          node-version: '>=16.x'
+          node-version: ${{ matrix.node-version }}
           cache: 'npm'
-      - run: npm install
-      - run: npx eslint .
-      - name: run tests
-        run: NODE_OPTIONS=--experimental-vm-modules npx jest
+      - run: make install
+      - run: make lint
+      - run: make test
