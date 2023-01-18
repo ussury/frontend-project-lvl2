@@ -1,4 +1,4 @@
-import fs from 'fs';
 import path from 'path';
+import fs from 'fs';
 
-export default (filepath) => fs.readFileSync(path.resolve(filepath));
+export default (filename) => fs.readFileSync(path.resolve(filename));
