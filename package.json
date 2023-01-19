@@ -10,7 +10,7 @@
     "gendiff": "bin/gendiff.js"
   },
   "scripts": {
-    "test": "jest --color"
+    "test": "jest --coverage"
   },
   "repository": {
     "type": "git",
