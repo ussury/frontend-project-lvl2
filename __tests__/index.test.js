@@ -13,7 +13,13 @@ const getFixturePath = (filename) =>
 const readFile = (filename) =>
   fs.readFileSync(getFixturePath(filename), 'utf-8');
 
-const dataObject = { 'timeout': 20, 'verbose': true, 'host': 'hexlet.io'};
+const dataObject = { timeout: 20, verbose: true, host: 'hexlet.io' };
+const dataYamlObject = {
+  host: 'hexlet.io',
+  timeout: 50,
+  proxy: '123.234.53.22',
+  follow: false,
+};
 const data1 = JSON.parse(readFile('file1.json'));
 const data2 = JSON.parse(readFile('file2.json'));
 const dataYaml = yaml.load(readFile('file.yaml'));
@@ -22,7 +28,8 @@ const dataYml = yaml.load(readFile('file.yml'));
 test('Parser', () => {
   expect(parser('__fixtures__/file2.json')).toEqual(dataObject);
   expect(parser('__fixtures__/file.yml')).toEqual(dataObject);
-})
+  expect(parser('__fixtures__/file.yaml')).toEqual(dataYamlObject);
+});
 test('JSON Differ', () => {
   expect(diff(data1, data2)).toEqual(readFile('resultPlainDiff.txt'));
 });
