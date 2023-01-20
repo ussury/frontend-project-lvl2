@@ -31,8 +31,8 @@ test('Parser', () => {
   expect(parser('__fixtures__/file.yaml')).toEqual(dataYamlObject);
 });
 test('JSON Differ', () => {
-  expect(diff(data1, data2)).toEqual(readFile('resultPlainDiff.txt'));
+  expect(diff(data1, data2)).toEqual(readFile('result.txt'));
 });
 test('YAML Differ', () => {
-  expect(diff(dataYaml, dataYml)).toEqual(readFile('resultPlainDiff.txt'));
+  expect(diff(dataYaml, dataYml)).toEqual(readFile('result.txt'));
 });
