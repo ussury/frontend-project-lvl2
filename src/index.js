@@ -1,6 +1,5 @@
 import _ from 'lodash';
-import format from './data/formatter.js';
-import filePath from './data/filePath.js';
+import parser from './parsers.js';
 
 export const diff = (data1, data2) => {
   const keysData1 = _.sortBy(Object.keys(data1));
@@ -27,4 +26,4 @@ export const diff = (data1, data2) => {
   return `${result}}`;
 };
 
-export const gendiff = (path1, path2) => (diff(format(filePath(path1)), format(filePath(path2))));
+export const gendiff = (path1, path2) => diff(parser(path1), parser(path2));
