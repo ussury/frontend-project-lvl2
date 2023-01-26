@@ -30,10 +30,11 @@ test('Parser', () => {
   expect(parser('__fixtures__/plain.yaml')).toEqual(dataYamlObject);
 });
 test('JSON Differ', () => {
-  expect(gendiff(data1, data2, 'stylish')).toEqual(readFile('result.txt'));
+  expect(gendiff(data1, data2, 'stylish')).toEqual(readFile('resultStylish.txt'));
   expect(gendiff(data1, data2, 'plain')).toEqual(readFile('resultPlain.txt'));
+  expect(gendiff(data1, data2, 'json')).toEqual(readFile('resultJson.txt'));
 });
 test('YAML Differ', () => {
-  expect(gendiff(dataYaml, dataYml, 'stylish')).toEqual(readFile('result.txt'));
+  expect(gendiff(dataYaml, dataYml, 'stylish')).toEqual(readFile('resultStylish.txt'));
   expect(gendiff(dataYaml, dataYml, 'plain')).toEqual(readFile('resultPlain.txt'));
 });
