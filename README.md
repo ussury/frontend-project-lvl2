@@ -6,4 +6,4 @@
 [![github-actions](https://github.com/ussury/frontend-project-lvl2/actions/workflows/github-actions.yml/badge.svg)](https://github.com/ussury/frontend-project-lvl2/actions/workflows/github-actions.yml)
 
 
-[![asciicast](https://asciinema.org/a/520380.svg)](https://asciinema.org/a/520380)
+![asciicast](https://asciinema.org/a/520380)
