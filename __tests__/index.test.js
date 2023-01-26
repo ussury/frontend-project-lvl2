@@ -1,8 +1,7 @@
 import fs from 'fs';
 import path from 'path';
-import yaml from 'js-yaml';
 import { fileURLToPath } from 'url';
-import { diff } from '../src/index.js';
+import gendiff from '../src/index.js';
 import parser from '../src/parsers.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -16,23 +15,23 @@ const readFile = (filename) =>
 const dataObject = { timeout: 20, verbose: true, host: 'hexlet.io' };
 const dataYamlObject = {
   host: 'hexlet.io',
-  timeout: 50,
+  timeout: 20,
   proxy: '123.234.53.22',
   follow: false,
 };
-const data1 = JSON.parse(readFile('file1.json'));
-const data2 = JSON.parse(readFile('file2.json'));
-const dataYaml = yaml.load(readFile('file.yaml'));
-const dataYml = yaml.load(readFile('file.yml'));
+
+const data1 = '__fixtures__/file1.json';
+const data2 = '__fixtures__/file2.json';
+const dataYaml = '__fixtures__/file.yaml';
+const dataYml = '__fixtures__/file.yml';
 
 test('Parser', () => {
-  expect(parser('__fixtures__/file2.json')).toEqual(dataObject);
-  expect(parser('__fixtures__/file.yml')).toEqual(dataObject);
-  expect(parser('__fixtures__/file.yaml')).toEqual(dataYamlObject);
+  expect(parser('__fixtures__/plain.json')).toEqual(dataObject);
+  expect(parser('__fixtures__/plain.yaml')).toEqual(dataYamlObject);
 });
 test('JSON Differ', () => {
-  expect(diff(data1, data2)).toEqual(readFile('result.txt'));
+  expect(gendiff(data1, data2, 'stylish')).toEqual(readFile('result.txt'));
 });
 test('YAML Differ', () => {
-  expect(diff(dataYaml, dataYml)).toEqual(readFile('result.txt'));
+  expect(gendiff(dataYaml, dataYml, 'stylish')).toEqual(readFile('result.txt'));
 });
