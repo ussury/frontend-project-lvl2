@@ -31,7 +31,9 @@ test('Parser', () => {
 });
 test('JSON Differ', () => {
   expect(gendiff(data1, data2, 'stylish')).toEqual(readFile('result.txt'));
+  expect(gendiff(data1, data2, 'plain')).toEqual(readFile('resultPlain.txt'));
 });
 test('YAML Differ', () => {
   expect(gendiff(dataYaml, dataYml, 'stylish')).toEqual(readFile('result.txt'));
+  expect(gendiff(dataYaml, dataYml, 'plain')).toEqual(readFile('resultPlain.txt'));
 });
