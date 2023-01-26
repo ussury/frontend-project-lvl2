@@ -1,14 +1,28 @@
+import _ from 'lodash';
+
+const getStr = (data) => {
+  if (_.isObject(data)) {
+    return '[complex value]';
+  }
+  if (_.isString(data)) {
+    return `'${data}'`;
+  }
+  return data;
+};
+
 const addStr = (path, status, data1, data2 = undefined) => {
-  if (status === 'added') {
-    return `Property '${path}' was added wich value: ${data1}\n`;
+  data1 = getStr(data1);
+  data2 = getStr(data2);
+  switch (status) {
+    case 'added':
+      return `Property '${path}' was added with value: ${data1}\n`;
+    case 'deleted':
+      return `Property '${path}' was removed\n`;
+    case 'modified':
+      return `Property '${path}' was updated. From ${data1} to ${data2}\n`;
+    default:
+      return '';
   }
-  if (status === 'deleted') {
-    return `Property '${path}' was removed\n`;
-  }
-  if (status === 'modified') {
-    return `Property '${path}' was updated. From ${data1} to ${data2}\n`;
-  }
-  return '';
 };
 
 const plain = (data) => {
