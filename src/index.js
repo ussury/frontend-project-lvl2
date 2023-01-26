@@ -1,29 +1,40 @@
 import _ from 'lodash';
 import parser from './parsers.js';
+import formatter from './formatters/index.js';
 
-export const diff = (data1, data2) => {
-  const keysData1 = _.sortBy(Object.keys(data1));
-  const keysData2 = _.sortBy(Object.keys(data2));
-  const union = _.union(keysData1, keysData2);
-  let result = '{\n';
+const differ = (data1, data2) => {
+  const keys1 = _.keys(data1);
+  const keys2 = _.keys(data2);
+  const keys = _.union(keys1, keys2).sort();
+  const diff = {};
 
-  for (const i of union) {
-    if (keysData1.includes(i) && keysData2.includes(i)) {
-      if (data1[i] === data2[i]) {
-        result = `${result}    ${i}: ${data1[i]}\n`;
-      } else {
-        result = `${result}  - ${i}: ${data1[i]}\n  + ${i}: ${data2[i]}\n`;
-      }
-    }
-    if (!keysData2.includes(i)) {
-      result = `${result}  - ${i}: ${data1[i]}\n`;
-    }
-    if (!keysData1.includes(i)) {
-      result = `${result}  + ${i}: ${data2[i]}\n`;
+  for (const key of keys) {
+    if (
+      _.has(data1, key) &&
+      _.has(data2, key) &&
+      _.isObject(data1[key]) &&
+      _.isObject(data2[key])
+    ) {
+      diff[key] = { type: 'nested', children: differ(data1[key], data2[key]) };
+    } else if (data1[key] === data2[key]) {
+      diff[key] = { type: 'same', children: data1[key] };
+    } else if (!_.has(data1, key)) {
+      diff[key] = { type: 'added', children: data2[key] };
+    } else if (!_.has(data2, key)) {
+      diff[key] = { type: 'deleted', children: data1[key] };
+    } else {
+      diff[key] = { type: 'modified', children: [data1[key], data2[key]] };
     }
   }
 
-  return `${result}}`;
+  return diff;
 };
 
-export const gendiff = (path1, path2) => diff(parser(path1), parser(path2));
+const gendiff = (filepath1, filepath2, format) => {
+  const path1 = parser(filepath1);
+  const path2 = parser(filepath2);
+  const tree = differ(path1, path2);
+  return formatter(format, tree);
+};
+
+export default gendiff;
