@@ -25,7 +25,7 @@ const addStr = (path, status, data1, data2 = undefined) => {
   }
 };
 
-const plain = (data) => {
+export default (data) => {
   const iter = (data, fullPath = '') => {
     const keys = Object.keys(data).sort();
     let resultStr = '';
@@ -51,4 +51,4 @@ const plain = (data) => {
   return iter(data);
 };
 
-export default plain;
+// export default plain;
