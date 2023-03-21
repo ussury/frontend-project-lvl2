@@ -11,27 +11,28 @@ const getStr = (data) => {
 };
 
 const addStr = (path, status, data1, data2 = undefined) => {
-  data1 = getStr(data1);
-  data2 = getStr(data2);
+  const newData1 = getStr(data1);
+  const newData2 = getStr(data2);
   switch (status) {
     case 'added':
-      return `Property '${path}' was added with value: ${data1}\n`;
+      return `Property '${path}' was added with value: ${newData1}\n`;
     case 'deleted':
       return `Property '${path}' was removed\n`;
     case 'modified':
-      return `Property '${path}' was updated. From ${data1} to ${data2}\n`;
+      return `Property '${path}' was updated. From ${newData1} to ${newData2}\n`;
     default:
       return '';
   }
 };
 
 const plain = (data) => {
-  const iter = (data, fullPath = '') => {
-    const keys = Object.keys(data).sort();
+  const iter = (dataIter, fullPath = '') => {
+    const keys = Object.keys(dataIter).sort();
     let resultStr = '';
+    // eslint-disable-next-line no-restricted-syntax
     for (const key of keys) {
       const path = `${fullPath}${key}`;
-      const diff = data[key];
+      const diff = dataIter[key];
       if (diff.type === 'nested') {
         resultStr += iter(diff.children, `${path}.`);
       } else if (diff.type === 'modified') {
@@ -39,7 +40,7 @@ const plain = (data) => {
           path,
           'modified',
           diff.children[0],
-          diff.children[1]
+          diff.children[1],
         );
       } else {
         resultStr += addStr(path, diff.type, diff.children);

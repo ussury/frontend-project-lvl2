@@ -8,12 +8,13 @@ const differ = (data1, data2) => {
   const keys = _.union(keys1, keys2).sort();
   const diff = {};
 
+  // eslint-disable-next-line no-restricted-syntax
   for (const key of keys) {
     if (
-      _.has(data1, key) &&
-      _.has(data2, key) &&
-      _.isObject(data1[key]) &&
-      _.isObject(data2[key])
+      _.has(data1, key)
+      && _.has(data2, key)
+      && _.isObject(data1[key])
+      && _.isObject(data2[key])
     ) {
       diff[key] = { type: 'nested', children: differ(data1[key], data2[key]) };
     } else if (data1[key] === data2[key]) {
@@ -30,7 +31,7 @@ const differ = (data1, data2) => {
   return diff;
 };
 
-const gendiff = (filepath1, filepath2, format='stylish') => {
+const gendiff = (filepath1, filepath2, format = 'stylish') => {
   const path1 = parser(filepath1);
   const path2 = parser(filepath2);
   const tree = differ(path1, path2);
