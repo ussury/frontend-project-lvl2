@@ -27,25 +27,25 @@ const addStr = (path, status, data1, data2 = undefined) => {
 
 const plain = (data) => {
   const iter = (dataIter, fullPath = '') => {
-    const keys = Object.keys(dataIter).sort();
-    let resultStr = '';
-    // eslint-disable-next-line no-restricted-syntax
-    for (const key of keys) {
+    const keys = _.sortBy(Object.keys(dataIter));
+    const resultStr = keys.reduce((acc, key) => {
       const path = `${fullPath}${key}`;
       const diff = dataIter[key];
       if (diff.type === 'nested') {
-        resultStr += iter(diff.children, `${path}.`);
-      } else if (diff.type === 'modified') {
-        resultStr += addStr(
+        return `${acc}${iter(diff.children, `${path}.`)}`;
+      }
+      if (diff.type === 'modified') {
+        const children = addStr(
           path,
           'modified',
           diff.children[0],
-          diff.children[1],
+          diff.children[1]
         );
-      } else {
-        resultStr += addStr(path, diff.type, diff.children);
+        return `${acc}${children}`;
       }
-    }
+      const children = addStr(path, diff.type, diff.children);
+      return `${acc}${children}`;
+    }, '');
     return resultStr;
   };
 

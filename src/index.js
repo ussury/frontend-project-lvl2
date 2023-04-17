@@ -5,28 +5,27 @@ import formatter from './formatters/index.js';
 const differ = (data1, data2) => {
   const keys1 = _.keys(data1);
   const keys2 = _.keys(data2);
-  const keys = _.union(keys1, keys2).sort();
-  const diff = {};
+  const keys = _.sortBy(_.union(keys1, keys2));
 
-  // eslint-disable-next-line no-restricted-syntax
-  for (const key of keys) {
+  const diff = keys.reduce((acc, key) => {
     if (
       _.has(data1, key)
       && _.has(data2, key)
       && _.isObject(data1[key])
       && _.isObject(data2[key])
     ) {
-      diff[key] = { type: 'nested', children: differ(data1[key], data2[key]) };
+      acc[key] = { type: 'nested', children: differ(data1[key], data2[key]) };
     } else if (data1[key] === data2[key]) {
-      diff[key] = { type: 'same', children: data1[key] };
+      acc[key] = { type: 'same', children: data1[key] };
     } else if (!_.has(data1, key)) {
-      diff[key] = { type: 'added', children: data2[key] };
+      acc[key] = { type: 'added', children: data2[key] };
     } else if (!_.has(data2, key)) {
-      diff[key] = { type: 'deleted', children: data1[key] };
+      acc[key] = { type: 'deleted', children: data1[key] };
     } else {
-      diff[key] = { type: 'modified', children: [data1[key], data2[key]] };
+      acc[key] = { type: 'modified', children: [data1[key], data2[key]] };
     }
-  }
+    return acc;
+  }, {});
 
   return diff;
 };
