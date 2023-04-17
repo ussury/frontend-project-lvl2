@@ -39,7 +39,7 @@ const plain = (data) => {
           path,
           'modified',
           diff.children[0],
-          diff.children[1]
+          diff.children[1],
         );
         return `${acc}${children}`;
       }
