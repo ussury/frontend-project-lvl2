@@ -1,94 +1,44 @@
 import _ from 'lodash';
 
-const getIndent = (n) => (n === 0 ? '' : ' '.repeat(n));
+const space = ' ';
+const spaceCount = 4;
 
-const format = (data) => {
-  let formatText = '';
-  let resultText = '';
-  // eslint-disable-next-line no-restricted-syntax
-  for (const el of data) {
-    const indent = getIndent(el.step);
-    formatText += `${indent}${el.status}${el.key}: ${el.children}\n`;
-    resultText = `{\n${formatText}${indent}}`;
+const getIndent = (step) => space.repeat(step * spaceCount).slice(0, -2);
+
+const stringify = (value, step) => {
+  if (!_.isPlainObject(value)) {
+    return String(value);
   }
-  return resultText;
+  const lines = Object
+    .entries(value)
+    .map(([key, val]) => `${getIndent(step + 1)}  ${key}: ${stringify(val, (step + 1))}`);
+  return `{\n${lines.join('\n')}\n${getIndent(step)}  }`;
 };
 
-const getObj = (data, step) => {
-  const keys = _.keys(data).sort();
-  const resultColl = [];
-
-  // eslint-disable-next-line no-restricted-syntax
-  for (const key of keys) {
-    const children = _.isObject(data[key])
-      ? getObj(data[key], step + 4)
-      : data[key];
-    resultColl.push({
-      step,
-      key,
-      status: '    ',
-      children,
+const iter = (tree, step = 1) => {
+  const result = tree
+    .flatMap((node) => {
+      switch (node.type) {
+        case 'nested': {
+          return `${getIndent(step)}  ${node.key}: {\n${iter(node.value, step + 1).join('\n')}\n${getIndent(step)}  }`;
+        }
+        case 'deleted': {
+          return `${getIndent(step)}- ${node.key}: ${stringify(node.value, step)}`;
+        }
+        case 'added': {
+          return `${getIndent(step)}+ ${node.key}: ${stringify(node.value, step)}`;
+        }
+        case 'changed': {
+          return `${getIndent(step)}- ${node.key}: ${stringify(node.value1, step)}\n${getIndent(step)}+ ${node.key}: ${stringify(node.value2, step)}`;
+        }
+        case 'unchanged': {
+          return `${getIndent(step)}  ${node.key}: ${stringify(node.value, step)}`;
+        }
+        default:
+          throw new Error(`Error: ${node.type} this type doesn't exist in this file`);
+      }
     });
-  }
-
-  return format(resultColl);
+  return result;
 };
 
-const isObj = (value, step) => (_.isObject(value) ? getObj(value, step) : value);
-
-const stylish = (data, step = 0) => {
-  const keys = _.keys(data).sort();
-  const newStep = step + 4;
-  const result = [];
-
-  // eslint-disable-next-line no-restricted-syntax
-  for (const key of keys) {
-    const tree = { step, key };
-    // eslint-disable-next-line default-case
-    switch (data[key].type) {
-      case 'nested':
-        result.push({
-          ...tree,
-          status: '    ',
-          children: stylish(data[key].children, newStep),
-        });
-        break;
-      case 'added':
-        result.push({
-          ...tree,
-          status: '  + ',
-          children: isObj(data[key].children, newStep),
-        });
-        break;
-      case 'deleted':
-        result.push({
-          ...tree,
-          status: '  - ',
-          children: isObj(data[key].children, newStep),
-        });
-        break;
-      case 'same':
-        result.push({
-          ...tree,
-          status: '    ',
-          children: isObj(data[key].children, newStep),
-        });
-        break;
-      case 'modified':
-        result.push({
-          ...tree,
-          status: '  - ',
-          children: isObj(data[key].children[0], newStep),
-        });
-        result.push({
-          ...tree,
-          status: '  + ',
-          children: isObj(data[key].children[1], newStep),
-        });
-        break;
-    }
-  }
-  return format(result);
-};
-
-export default stylish;
+export default (diff) => `{\n${iter(diff).join('\n')}\n}`;

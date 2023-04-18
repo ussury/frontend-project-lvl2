@@ -18,7 +18,7 @@ const addStr = (path, status, data1, data2 = undefined) => {
       return `Property '${path}' was added with value: ${newData1}\n`;
     case 'deleted':
       return `Property '${path}' was removed\n`;
-    case 'modified':
+    case 'changed':
       return `Property '${path}' was updated. From ${newData1} to ${newData2}\n`;
     default:
       return '';
@@ -26,29 +26,26 @@ const addStr = (path, status, data1, data2 = undefined) => {
 };
 
 const plain = (data) => {
-  const iter = (dataIter, fullPath = '') => {
-    const keys = _.sortBy(Object.keys(dataIter));
-    const resultStr = keys.reduce((acc, key) => {
-      const path = `${fullPath}${key}`;
-      const diff = dataIter[key];
-      if (diff.type === 'nested') {
-        return `${acc}${iter(diff.children, `${path}.`)}`;
+  const iter = (data_, fullPath = '') => {
+    const result = data_.reduce((acc, el) => {
+      const path = `${fullPath}${el.key}`;
+      if (el.type === 'nested') {
+        return `${acc}${iter(el.value, `${path}.`)}`;
       }
-      if (diff.type === 'modified') {
+      if (el.type === 'changed') {
         const children = addStr(
           path,
-          'modified',
-          diff.children[0],
-          diff.children[1],
+          'changed',
+          el.value1,
+          el.value2,
         );
         return `${acc}${children}`;
       }
-      const children = addStr(path, diff.type, diff.children);
+      const children = addStr(path, el.type, el.value);
       return `${acc}${children}`;
     }, '');
-    return resultStr;
+    return result;
   };
-
   return iter(data);
 };
 
