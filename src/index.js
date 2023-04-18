@@ -3,31 +3,26 @@ import parser from './parsers.js';
 import formatter from './formatters/index.js';
 
 const differ = (data1, data2) => {
-  const keys1 = _.keys(data1);
-  const keys2 = _.keys(data2);
-  const keys = _.sortBy(_.union(keys1, keys2));
+  const keys = _.sortBy(_.union(_.keys(data1), _.keys(data2)));
 
-  const diff = keys.reduce((acc, key) => {
-    if (
-      _.has(data1, key)
-      && _.has(data2, key)
-      && _.isObject(data1[key])
-      && _.isObject(data2[key])
-    ) {
-      acc[key] = { type: 'nested', children: differ(data1[key], data2[key]) };
-    } else if (data1[key] === data2[key]) {
-      acc[key] = { type: 'same', children: data1[key] };
-    } else if (!_.has(data1, key)) {
-      acc[key] = { type: 'added', children: data2[key] };
-    } else if (!_.has(data2, key)) {
-      acc[key] = { type: 'deleted', children: data1[key] };
-    } else {
-      acc[key] = { type: 'modified', children: [data1[key], data2[key]] };
+  const tree = keys.map((key) => {
+    if (_.isPlainObject(data1[key]) && _.isPlainObject(data2[key])) {
+      return { key, type: 'nested', value: differ(data1[key], data2[key]) };
     }
-    return acc;
-  }, {});
-
-  return diff;
+    if (!_.has(data2, key)) {
+      return { key, type: 'deleted', value: data1[key] };
+    }
+    if (!_.has(data1, key)) {
+      return { key, type: 'added', value: data2[key] };
+    }
+    if (data1[key] !== data2[key]) {
+      return {
+        key, type: 'changed', value1: data1[key], value2: data2[key],
+      };
+    }
+    return { key, type: 'unchanged', value: data1[key] };
+  });
+  return tree;
 };
 
 const gendiff = (filepath1, filepath2, format = 'stylish') => {
